@@ -19,6 +19,7 @@ function create(tag) {
 Table.trafficDistribution = function() {
     var params = settings.trafficDistribution;
     return {
+        title: "Volume de tráfego",
         headers: ["Direção", "LL", "LR", "RL", "RR"],
         content: [
             ["Proporção (%)", params.LL, params.LR, params.RL, params.RR]
@@ -33,18 +34,54 @@ Table.successRate = function() {
         content.push([key, value.success, value.failure, value.delay, 100]);
     });
     return {
+        title: "Status por direção da mensagem",
         headers: ["Direção", "Sucesso", "Fracasso", "Adiamento", "Total"],
         content: content
     };
 };
 
+Table.timeBetweenArrivals = function() {
+    var params = settings.timeBetweenArrivals;
+    return {
+        title: "Tempo entre chegadas",
+        headers: ["Origem", "TEC (seg.)"],
+        content: [
+            ["Local", params.local],
+            ["Remota", params.remote]
+        ]
+    };
+};
+
+Table.serviceTimes = function() {
+    var params = settings.serviceTimes;
+    var content = [];
+    foreach(params, function(key, value) {
+        content.push([key, value.reception, value.serviceCenter]);
+    });
+    return {
+        title: "Tempos de serviço (seg.)",
+        headers: ["Tipo de Proc.", "Recepção", "Centro de Serviço"],
+        content: content
+    };
+};
+
 Table.toHTML = function(table) {
+    var title = table.title;
     var headers = table.headers;
     var content = table.content;
 
     var table = create("table");
+
     var tr = create("tr");
-    var td;
+    tr.classList.add("header");
+
+    var td = create("td");
+    td.innerHTML = title;
+    td.colSpan = headers.length;
+    tr.appendChild(td);
+    table.appendChild(tr);
+
+    tr = create("tr");
     tr.classList.add("header");
     for (var i = 0; i < headers.length; i++) {
         td = create("td");

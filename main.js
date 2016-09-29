@@ -39,7 +39,8 @@ function printAllTables() {
     var tables = [];
     tables.push(Table.trafficDistribution());
     tables.push(Table.successRate());
-    // TODO: other tables
+    tables.push(Table.timeBetweenArrivals());
+    tables.push(Table.serviceTimes());
 
     for (var i = 0; i < tables.length; i++) {
         var table = Table.toHTML(tables[i]);
