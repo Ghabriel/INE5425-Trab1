@@ -43,8 +43,8 @@ function printAllTables() {
 
     for (var i = 0; i < tables.length; i++) {
         var table = Table.toHTML(tables[i]);
+        $("#leftbar").appendChild(table);
     }
-    $("#leftbar").appendChild(table);
 }
 
 addEventListener("load", function() {

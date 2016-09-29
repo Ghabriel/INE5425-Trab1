@@ -4,6 +4,14 @@
 var Table = {};
 var settings = Settings;
 
+function foreach(obj, callback) {
+    for (var i in obj) {
+        if (obj.hasOwnProperty(i)) {
+            callback(i, obj[i]);
+        }
+    }
+}
+
 function create(tag) {
     return document.createElement(tag);
 }
