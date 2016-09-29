@@ -2,6 +2,22 @@
     font-family: sans-serif;
 }
 
+body {
+	display: table;
+	height: 100%;
+	margin: 0;
+}
+
+#leftbar , #main {
+	display: table-cell;
+	padding: 10px;
+	vertical-align: top;
+}
+
+#leftbar {
+	border-right: 1px solid black;
+}
+
 #speed_text {
     text-align: center;
     width: 50px;
