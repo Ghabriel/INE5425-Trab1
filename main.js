@@ -8,7 +8,7 @@ function $(selector) {
     return document.querySelectorAll(selector);
 }
 
-addEventListener("load", function() {
+function setDOMEvents() {
     var speedSlider = $("#sim_speed");
     var speedText = $("#speed_text");
     var playButton = $("#play_btn");
@@ -33,6 +33,23 @@ addEventListener("load", function() {
     pauseButton.addEventListener("click", function() {
         alert("Pause");
     });
+}
+
+function printAllTables() {
+    var tables = [];
+    tables.push(Table.trafficDistribution());
+    tables.push(Table.successRate());
+    // TODO: other tables
+
+    for (var i = 0; i < tables.length; i++) {
+        var table = Table.toHTML(tables[i]);
+    }
+    $("#leftbar").appendChild(table);
+}
+
+addEventListener("load", function() {
+    setDOMEvents();
+    printAllTables();
 });
 
 })();
