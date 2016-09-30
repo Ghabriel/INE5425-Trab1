@@ -9,10 +9,14 @@ function $(selector) {
 }
 
 function setDOMEvents() {
+    var leftBar = $("#leftbar");
     var speedSlider = $("#sim_speed");
     var speedText = $("#speed_text");
     var playButton = $("#play_btn");
     var pauseButton = $("#pause_btn");
+    var settingsButton = $("#settings_btn");
+
+    leftBar.style.display = "none";
 
     speedSlider.addEventListener("input", function() {
         speedText.value = this.value;
@@ -32,6 +36,11 @@ function setDOMEvents() {
 
     pauseButton.addEventListener("click", function() {
         alert("Pause");
+    });
+
+    settingsButton.addEventListener("click", function() {
+        var currentDisplay = leftBar.style.display;
+        leftBar.style.display = (currentDisplay == "none") ? "block" : "none";
     });
 }
 

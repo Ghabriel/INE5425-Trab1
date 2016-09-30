@@ -2,6 +2,25 @@
 "use strict";
 
 var Settings = {
+	regex: null,
+	fn: {
+		uniform: {
+			label: "UNIF",
+			params: 2
+		},
+		exponential: {
+			label: "EXPO",
+			params: 1
+		},
+		triangular: {
+			label: "TRIA",
+			params: 3
+		},
+		normal: {
+			label: "NORM",
+			params: 2
+		}
+	},
 	trafficDistribution: {
 		LL: 50,
 		LR: 25,
@@ -85,6 +104,43 @@ var Settings = {
 		}
 	}
 };
+
+Settings.foreach = function(obj, callback) {
+    for (var i in obj) {
+        if (obj.hasOwnProperty(i)) {
+            callback(i, obj[i]);
+        }
+    }
+};
+
+var foreach = Settings.foreach;
+var numbers = /[0-9]*\.[0-9]+|[0-9]+\.?[0-9]*/;
+
+function operation(name, numParams) {
+	var result = name + " *\\(";
+	var comma = false;
+	for (var i = 0; i < numParams; i++) {
+		if (comma) {
+			result += ",";
+		} else {
+			comma = true;
+		}
+		result += " *(" + numbers.source + ") *";
+	}
+	result += "\\)";
+	return result;
+}
+
+var functions = {};
+foreach(Settings.fn, function(name, props) {
+	functions[name] = operation(props.label, props.params);
+});
+
+var regex = {};
+regex.numbers = numbers,
+regex.expoFunction = new RegExp(functions.exponential, "i");
+regex.functions = new RegExp(Object.values(functions).join("|"), "i");
+Settings.regex = regex;
 
 window.Settings = Settings;
 

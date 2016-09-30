@@ -39,3 +39,19 @@ tr.header td {
     text-align: center;
     width: 50px;
 }
+
+input[type="text"] {
+	text-align: center;
+}
+
+.numeric_filter {
+	width: 60px;
+}
+
+.expo_filter {
+	width: 120px;
+}
+
+.stat_filter {
+	width: 200px;
+}
