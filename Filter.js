@@ -38,16 +38,16 @@ Macro.prototype.setParams = function(args) {
 	this.params = args;
 }
 
-Macro.prototype.call = function() {
-	return this.callback(this.params);
+Macro.prototype.call = function(args) {
+	return this.callback(args);
 };
 
 var AdderMacro = function(columns) {
 	return new Macro(function(values) {
 		var sum = 0;
 		for (var i = 0; i < values.length; i++) {
-			if (values.includes(i)) {
-				sum += values[i];
+			if (columns.includes(i)) {
+				sum += values[i] * 1;
 			}
 		}
 		return sum;

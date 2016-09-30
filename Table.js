@@ -11,7 +11,7 @@ function create(tag) {
 
 Table.trafficDistribution = function() {
     var params = settings.trafficDistribution;
-    var behavior = new NumericFilter();
+    var behavior = NumericFilter;
     return {
         title: "Volume de tráfego",
         headers: ["Direção", "LL", "LR", "RL", "RR"],
@@ -24,8 +24,9 @@ Table.trafficDistribution = function() {
 
 Table.successRate = function() {
     var params = settings.successRate;
-    var behavior = new NumericFilter();
-    var totalBehavior = new AdderMacro([1, 2, 3]);
+    var behavior = NumericFilter;
+    // var totalBehavior = new AdderMacro([1, 2, 3]);
+    var totalBehavior = settings.bind(AdderMacro, [1, 2, 3]);
     var content = [];
     foreach(params, function(key, value) {
         content.push([key, value.success, value.failure, value.delay, 100]);
@@ -40,7 +41,7 @@ Table.successRate = function() {
 
 Table.timeBetweenArrivals = function() {
     var params = settings.timeBetweenArrivals;
-    var behavior = new ExponentialFilter();
+    var behavior = ExponentialFilter;
     return {
         title: "Tempo entre chegadas",
         headers: ["Origem", "TEC (seg.)"],
@@ -54,7 +55,7 @@ Table.timeBetweenArrivals = function() {
 
 Table.serviceTimes = function() {
     var params = settings.serviceTimes;
-    var behavior = new StatisticFilter();
+    var behavior = StatisticFilter;
     var content = [];
     foreach(params, function(key, value) {
         content.push([key, value.reception, value.serviceCenter]);
@@ -107,11 +108,47 @@ function uniqueID() {
 }
 
 function attachEvent(td, behavior) {
-    // TODO
+    if (!settings.events.hasOwnProperty(td.id)) {
+        settings.events[td.id] = [];
+    }
+    settings.events[td.id].push(behavior);
+}
+
+function attachRedirectEvent(td, target) {
+    if (!settings.events.hasOwnProperty(td.id)) {
+        settings.events[td.id] = [];
+    }
+    settings.events[td.id].push(target);
+}
+
+function getValue(td) {
+    if (td.childElementCount > 0) {
+        return td.children[0].value;
+    }
+    return td.innerHTML;
 }
 
 function callEvents(td) {
-    alert("OK");
+    var events = settings.events;
+    if (events.hasOwnProperty(td.id)) {
+        var list = events[td.id];
+        for (var i = 0; i < list.length; i++) {
+            var event = list[i];
+            if (event instanceof Filter) {
+                console.log("Filter");
+            } else if (event instanceof Macro) {
+                var params = event.params;
+                var values = [];
+                for (var i = 0; i < params.length; i++) {
+                    values.push(getValue(params[i]));
+                }
+                td.innerHTML = event.call(values);
+            } else {
+                // event is a <td>, so call its events
+                callEvents(event);
+            }
+        }
+    }
 }
 
 function bindBehaviorEvent(td, behavior, row) {
@@ -120,7 +157,8 @@ function bindBehaviorEvent(td, behavior, row) {
     if (behavior instanceof Macro) {
         behavior.setParams(row);
         for (var i = 0; i < row.length; i++) {
-            attachEvent(row[i], td);
+            // changes to row[i] trigger events on td
+            attachRedirectEvent(row[i], td);
         }
     } else if (behavior instanceof Filter) {
         td.children[0].addEventListener("keyup", function() {
@@ -137,11 +175,18 @@ Table.toHTML = function(info) {
     var content = info.content;
     for (var i = 0; i < content.length; i++) {
         var tr = create("tr");
+        var cells = [];
         for (var j = 0; j < content[i].length; j++) {
             var td = create("td");
-            prepareCell(td, content[i][j], info.edit[j]);
+            var behavior = null;
+            if (info.edit[j] !== null) {
+                behavior = new info.edit[j]();
+            }
+
+            prepareCell(td, content[i][j], behavior);
             // bindContent(content[i][j], td);
-            bindBehaviorEvent(td, info.edit[j], content[i]);
+            bindBehaviorEvent(td, behavior, cells);
+            cells.push(td);
             tr.appendChild(td);
         }
         table.appendChild(tr);

@@ -114,6 +114,13 @@ Settings.foreach = function(obj, callback) {
     }
 };
 
+Settings.bind = function(fn/*, ...args*/) {
+    var args = arguments;
+    return function() {
+        return fn.apply(window, Array.prototype.slice.call(args, 1));
+    };
+};
+
 var foreach = Settings.foreach;
 var numbers = /[0-9]*\.[0-9]+|[0-9]+\.?[0-9]*/;
 
