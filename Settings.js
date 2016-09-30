@@ -3,6 +3,7 @@
 
 var Settings = {
 	regex: null,
+	events: {},
 	fn: {
 		uniform: {
 			label: "UNIF",

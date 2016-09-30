@@ -11,20 +11,21 @@ function create(tag) {
 
 Table.trafficDistribution = function() {
     var params = settings.trafficDistribution;
-    var filter = new NumericFilter();
+    var behavior = new NumericFilter();
     return {
         title: "Volume de tráfego",
         headers: ["Direção", "LL", "LR", "RL", "RR"],
         content: [
             ["Proporção (%)", params.LL, params.LR, params.RL, params.RR]
         ],
-        edit: [null, filter, filter, filter, filter]
+        edit: [null, behavior, behavior, behavior, behavior]
     };
 };
 
 Table.successRate = function() {
     var params = settings.successRate;
-    var filter = new NumericFilter();
+    var behavior = new NumericFilter();
+    var totalBehavior = new AdderMacro([1, 2, 3]);
     var content = [];
     foreach(params, function(key, value) {
         content.push([key, value.success, value.failure, value.delay, 100]);
@@ -33,13 +34,13 @@ Table.successRate = function() {
         title: "Status por direção da mensagem",
         headers: ["Direção", "Sucesso", "Fracasso", "Adiamento", "Total"],
         content: content,
-        edit: [null, filter, filter, filter, null]
+        edit: [null, behavior, behavior, behavior, totalBehavior]
     };
 };
 
 Table.timeBetweenArrivals = function() {
     var params = settings.timeBetweenArrivals;
-    var filter = new ExponentialFilter();
+    var behavior = new ExponentialFilter();
     return {
         title: "Tempo entre chegadas",
         headers: ["Origem", "TEC (seg.)"],
@@ -47,13 +48,13 @@ Table.timeBetweenArrivals = function() {
             ["Local", params.local],
             ["Remota", params.remote]
         ],
-        edit: [null, filter]
+        edit: [null, behavior]
     };
 };
 
 Table.serviceTimes = function() {
     var params = settings.serviceTimes;
-    var filter = new StatisticFilter();
+    var behavior = new StatisticFilter();
     var content = [];
     foreach(params, function(key, value) {
         content.push([key, value.reception, value.serviceCenter]);
@@ -62,7 +63,7 @@ Table.serviceTimes = function() {
         title: "Tempos de serviço (seg.)",
         headers: ["Tipo de Proc.", "Recepção", "Centro de Serviço"],
         content: content,
-        edit: [null, filter, filter]
+        edit: [null, behavior, behavior]
     };
 };
 
@@ -88,21 +89,43 @@ function prepareHeaders(headers, table) {
     table.appendChild(tr);
 }
 
-function prepareCell(td, content, filter) {
-    if (filter !== null) {
+function prepareCell(td, content, behavior) {
+    if (behavior instanceof Filter) {
         var input = create("input");
         input.type = "text";
         input.value = content;
-        input.classList.add(filter.css);
+        input.classList.add(behavior.css);
         td.appendChild(input);
     } else {
         td.innerHTML = content;
     }
 }
 
-function bindEditEvent(filter, td) {
-    if (filter !== null) {
-        // TODO: bind filter to td
+var counter = 0;
+function uniqueID() {
+    return ++counter;
+}
+
+function attachEvent(td, behavior) {
+    // TODO
+}
+
+function callEvents(td) {
+    alert("OK");
+}
+
+function bindBehaviorEvent(td, behavior, row) {
+    td.id = uniqueID();
+    attachEvent(td, behavior);
+    if (behavior instanceof Macro) {
+        behavior.setParams(row);
+        for (var i = 0; i < row.length; i++) {
+            attachEvent(row[i], td);
+        }
+    } else if (behavior instanceof Filter) {
+        td.children[0].addEventListener("keyup", function() {
+            callEvents(td);
+        });
     }
 }
 
@@ -118,7 +141,7 @@ Table.toHTML = function(info) {
             var td = create("td");
             prepareCell(td, content[i][j], info.edit[j]);
             // bindContent(content[i][j], td);
-            bindEditEvent(info.edit[j], td);
+            bindBehaviorEvent(td, info.edit[j], content[i]);
             tr.appendChild(td);
         }
         table.appendChild(tr);
