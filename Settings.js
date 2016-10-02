@@ -2,7 +2,9 @@
 "use strict";
 
 var Settings = {
-	regex: null,
+	regex: {
+		numbers: /[0-9]*\.[0-9]+|[0-9]+\.?[0-9]*/
+	},
 	events: {},
 	fn: {
 		uniform: {
@@ -122,7 +124,7 @@ Settings.bind = function(fn/*, ...args*/) {
 };
 
 var foreach = Settings.foreach;
-var numbers = /[0-9]*\.[0-9]+|[0-9]+\.?[0-9]*/;
+var numbers = Settings.regex.numbers;
 
 function operation(name, numParams) {
 	var result = name + " *\\(";
@@ -143,12 +145,10 @@ var functions = {};
 foreach(Settings.fn, function(name, props) {
 	functions[name] = operation(props.label, props.params);
 });
+functions.constant = numbers.source;
 
-var regex = {};
-regex.numbers = numbers,
-regex.expoFunction = new RegExp(functions.exponential, "i");
-regex.functions = new RegExp(Object.values(functions).join("|"), "i");
-Settings.regex = regex;
+Settings.regex.expoFunction = new RegExp(functions.exponential, "i");
+Settings.regex.functions = new RegExp(Object.values(functions).join("|"), "i");
 
 window.Settings = Settings;
 

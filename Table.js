@@ -135,7 +135,17 @@ function callEvents(td) {
         for (var i = 0; i < list.length; i++) {
             var event = list[i];
             if (event instanceof Filter) {
-                console.log("Filter");
+                var regex = event.regex;
+                regex = new RegExp("^(" + regex.source + ")$", regex.flags);
+                var valid = regex.test(getValue(td));
+                var input = td.children[0];
+                if (valid) {
+                    input.classList.remove("invalid");
+                    input.classList.add("valid");
+                } else {
+                    input.classList.remove("valid");
+                    input.classList.add("invalid");
+                }
             } else if (event instanceof Macro) {
                 var params = event.params;
                 var values = [];

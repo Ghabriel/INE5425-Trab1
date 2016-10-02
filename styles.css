@@ -55,3 +55,11 @@ input[type="text"] {
 .stat_filter {
 	width: 200px;
 }
+
+.valid {
+	color: black;
+}
+
+.invalid {
+	color: red;
+}
