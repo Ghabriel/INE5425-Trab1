@@ -22,6 +22,10 @@ function setDOMEvents() {
         speedText.value = this.value;
     });
 
+    speedSlider.addEventListener("change", function() {
+        speedText.value = this.value;
+    });
+
     speedText.value = speedSlider.value;
     speedText.addEventListener("keyup", function(ev) {
         if (ev.keyCode == 13) {
