@@ -40,6 +40,14 @@ tr.header td {
     width: 50px;
 }
 
+#main {
+	white-space: nowrap;
+}
+
+#sim_speed {
+	vertical-align: middle;
+}
+
 input[type="text"] {
 	text-align: center;
 }
@@ -62,4 +70,11 @@ input[type="text"] {
 
 .invalid {
 	color: red;
+}
+
+.btn_img {
+	vertical-align: middle;
+    max-width: 15%;
+    max-height: 15%;
+    cursor: pointer;
 }
