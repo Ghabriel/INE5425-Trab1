@@ -61,9 +61,16 @@ function printAllTables() {
     }
 }
 
+function printInterface() {
+    var container = $("#content");
+    var ui = new Interface(container);
+    ui.render();
+}
+
 addEventListener("load", function() {
     setDOMEvents();
     printAllTables();
+    printInterface();
 });
 
 })();

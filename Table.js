@@ -4,6 +4,7 @@
 var Table = {};
 var settings = Settings;
 var foreach = settings.foreach;
+var counter = 0;
 
 function create(tag) {
     return document.createElement(tag);
@@ -102,7 +103,6 @@ function prepareCell(td, content, behavior) {
     }
 }
 
-var counter = 0;
 function uniqueID() {
     return ++counter;
 }
