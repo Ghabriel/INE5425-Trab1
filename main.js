@@ -1,6 +1,10 @@
 (function() {
 "use strict";
 
+function speed() {
+    return $("#speed_text").value;
+}
+
 function $(selector) {
     if (selector[0] == '#') {
         return document.querySelector(selector);
@@ -65,6 +69,9 @@ function printInterface() {
     var container = $("#content");
     var ui = new Interface(container);
     ui.render();
+    var simulator = new Simulator(ui);
+    simulator.setSpeed(speed());
+    simulator.exec();
 }
 
 addEventListener("load", function() {

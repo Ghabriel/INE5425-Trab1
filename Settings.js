@@ -2,15 +2,27 @@
 "use strict";
 
 var Settings = {
-    width: screen.width,
-    height: screen.height,
+    width: 900,
+    height: 350,
+    mailURL: "images/envelope.svg",
     ui: {
-        spawner: {
-            x: 50,
-            y: 120,
-            width: 120,
-            height: 120
-        },
+        boxFillColor: "white",
+        boxStrokeColor: "black",
+        wireColor: "black",
+        spawners: [
+            {
+                x: 50,
+                y: 50,
+                width: 120,
+                height: 120
+            },
+            {
+                x: 50,
+                y: 190,
+                width: 120,
+                height: 120
+            }
+        ],
         serviceCenter: {
             main: {
                 x: 300,
@@ -18,19 +30,33 @@ var Settings = {
                 width: 120,
                 height: 120
             },
-            1: {
-                x: 441,
+            first: {
+                x: 500,
                 y: 50,
                 width: 120,
                 height: 120
             },
-            2: {
-                x: 441,
+            second: {
+                x: 500,
                 y: 190,
                 width: 120,
                 height: 120
             }
-        }
+        },
+        disposers: [
+            {
+                x: 750,
+                y: 50,
+                width: 120,
+                height: 120
+            },
+            {
+                x: 750,
+                y: 190,
+                width: 120,
+                height: 120
+            }
+        ]
     },
     regex: {
         numbers: /[0-9]*\.[0-9]+|[0-9]+\.?[0-9]*/
