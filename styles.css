@@ -74,7 +74,12 @@ input[type="text"] {
 
 .btn_img {
 	vertical-align: middle;
-    max-width: 15%;
-    max-height: 15%;
+    max-width: 5%;
+    max-height: 5%;
     cursor: pointer;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
 }
