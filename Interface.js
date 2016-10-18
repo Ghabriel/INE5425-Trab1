@@ -36,7 +36,7 @@ function rect(canvas, props, content) {
         "font-size": 20,
         textAnchor: "middle"
     });
-    return rect;
+    return text;
 }
 
 function line(canvas, x1, y1, x2, y2) {
@@ -45,13 +45,26 @@ function line(canvas, x1, y1, x2, y2) {
     return line;
 };
 
+var retext = function(container, props, txt) {
+    txt = txt.split("\n");
+    container.attr({
+        text: txt,
+    }).selectAll("tspan:nth-child(n+2)").attr({
+        dy: "1.2em",
+        x: props.x + props.width/2
+    });
+};
+
 var Interface = function(container) {
     this.canvas = Snap(Settings.width, Settings.height);
+    this.spawners = null;
+    this.serviceCenters = null;
+    this.disposers = null;
+    this.edges = false;
     container.appendChild(this.canvas.node);
 };
 
 Interface.prototype.render = function() {
-    this.canvas.clear();
     this.renderSpawners();
     this.renderServiceCenters();
     this.renderDisposers();
@@ -60,24 +73,48 @@ Interface.prototype.render = function() {
 
 Interface.prototype.renderSpawners = function() {
     var settings = Settings.ui.spawners;
-    rect(this.canvas, settings[0], "Origem\n(local)\n" + Stats.local);
-    rect(this.canvas, settings[1], "Origem\n(remoto)\n" + Stats.remote);
+    if (!this.spawners) {
+        this.spawners = [];
+        this.spawners.push(rect(this.canvas, settings[0], ""));
+        this.spawners.push(rect(this.canvas, settings[1], ""));
+    }
+
+    retext(this.spawners[0], settings[0], "Origem\n(local)\n" + Stats.local);
+    retext(this.spawners[1], settings[1], "Origem\n(remoto)\n" + Stats.remote);
 };
 
 Interface.prototype.renderServiceCenters = function() {
     var settings = Settings.ui.serviceCenter;
-    rect(this.canvas, settings.main, "Centro de\nRecepção\n" + Stats.atReceptionCenter);
-    rect(this.canvas, settings.first, "Centro de\nServiço 1\n" + Stats.atServiceCenter1);
-    rect(this.canvas, settings.second, "Centro de\nServiço 2\n" + Stats.atServiceCenter2);
+    if (!this.serviceCenters) {
+        this.serviceCenters = [];
+        this.serviceCenters.push(rect(this.canvas, settings.main, ""));
+        this.serviceCenters.push(rect(this.canvas, settings.first, ""));
+        this.serviceCenters.push(rect(this.canvas, settings.second, ""));
+    }
+
+    retext(this.serviceCenters[0], settings.main, "Centro de\nRecepção\n" + Stats.atReceptionCenter);
+    retext(this.serviceCenters[1], settings.first, "Centro de\nServiço 1\n" + Stats.atServiceCenter1);
+    retext(this.serviceCenters[2], settings.second, "Centro de\nServiço 2\n" + Stats.atServiceCenter2);
 };
 
 Interface.prototype.renderDisposers = function() {
     var settings = Settings.ui.disposers;
-    rect(this.canvas, settings[0], "Fim\n(sucesso)\n" + Stats.success);
-    rect(this.canvas, settings[1], "Fim\n(falha)\n" + Stats.failure);
+    if (!this.disposers) {
+        this.disposers = [];
+        this.disposers.push(rect(this.canvas, settings[0], ""));
+        this.disposers.push(rect(this.canvas, settings[1], ""));        
+    }
+
+    retext(this.disposers[0], settings[0], "Fim\n(sucesso)\n" + Stats.success);
+    retext(this.disposers[1], settings[1], "Fim\n(falha)\n" + Stats.failure);
 };
 
 Interface.prototype.renderEdges = function() {
+    if (this.edges) {
+        return;
+    }
+    this.edges = true;
+
     var settings = Settings.ui;
     var spawners = settings.spawners;
     var recepCenter = settings.serviceCenter.main;
@@ -111,34 +148,36 @@ Interface.prototype.renderEdges = function() {
     }
 };
 
-Interface.prototype.spawnMail = function(speed, origin, destination) {
-    // var parts = [    
-    //     this.canvas.path("M7,9L5.268,7.484l-4.952,4.245C0.496,11.896,0.739,12,1.007,12h11.986    c0.267,0,0.509-0.104,0.688-0.271L8.732,7.484L7,9z"),
-    //     this.canvas.path("M13.684,2.271C13.504,2.103,13.262,2,12.993,2H1.007C0.74,2,0.498,2.104,0.318,2.273L7,8    L13.684,2.271z"),
-    //     this.canvas.path("M0,2.878L0 11.186 4.833 7.079 z"),
-    //     this.canvas.path("M9.167,7.079L14 11.186 14 2.875 z")
-    // ];
+Interface.prototype.spawnMail = function(speed, origin, destination, callback) {
+    var self = this;
+    Snap.load("images/envelope.svg", function(f) {
+        var mail = f.select("g");
+        self.canvas.append(mail);
 
-    // var mailGroup = this.canvas.group(parts);
-    // var mail = this.canvas.set();
-    // for (var i = 0; i < parts.length; i++) {
-    //     parts[i].attr("fill", "#030104");
-    //     parts[i].attr("stroke-width", "0");
-    //     mailGroup.push(parts[i]);
-    //     mail.push(parts[i]);
-    // }
+        var scale = 3;
+        var interval = 600 / speed;
 
-    // mailGroup.scale(3, 3);
+        var scene = new Snap.Matrix();
+        scene.translate(origin.x + origin.width,
+                        origin.y + origin.height/2 - 15);
+        scene.scale(scale, scale);
 
-    // mail.animate({
-    //     transform: "R45, 550, 400"
-    // }, 2000);
-    // mail.animate({
-    //     x: 400
-    // }, 100, function() {
-    //     // TODO: bye cartinha
-    //     console.log("ok");
-    // });
+        // Initial position
+        mail.attr({
+            transform: scene
+        });
+
+        // Animates the mail to the destination
+        var dx = destination.x - (origin.x + origin.width) - 42;
+        var dy = destination.y + destination.height/2 - (origin.y + origin.height/2) - 15;
+        scene.translate(dx/scale, dy/scale);
+        mail.animate({
+            transform: scene
+        }, interval, function() {
+            mail.remove();
+            callback();
+        });
+    });
 };
 
 window.Interface = Interface;

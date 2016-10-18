@@ -1,6 +1,8 @@
 (function() {
 "use strict";
 
+var simulator;
+
 function speed() {
     return $("#speed_text").value;
 }
@@ -22,13 +24,13 @@ function setDOMEvents() {
 
     leftBar.style.display = "none";
 
-    speedSlider.addEventListener("input", function() {
+    var sliderCallback = function() {
         speedText.value = this.value;
-    });
+        simulator.setSpeed(this.value);
+    };
 
-    speedSlider.addEventListener("change", function() {
-        speedText.value = this.value;
-    });
+    speedSlider.addEventListener("input", sliderCallback);
+    speedSlider.addEventListener("change", sliderCallback);
 
     speedText.value = speedSlider.value;
     speedText.addEventListener("keyup", function(ev) {
@@ -39,11 +41,11 @@ function setDOMEvents() {
     });
 
     playButton.addEventListener("click", function() {
-        alert("Play");
+        simulator.play();
     });
 
     pauseButton.addEventListener("click", function() {
-        alert("Pause");
+        simulator.pause();
     });
 
     settingsButton.addEventListener("click", function() {
@@ -69,9 +71,8 @@ function printInterface() {
     var container = $("#content");
     var ui = new Interface(container);
     ui.render();
-    var simulator = new Simulator(ui);
+    simulator = new Simulator(ui);
     simulator.setSpeed(speed());
-    simulator.exec();
 }
 
 addEventListener("load", function() {
