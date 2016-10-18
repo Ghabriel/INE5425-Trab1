@@ -46,16 +46,16 @@ var Settings = {
         disposers: [
             {
                 x: 750,
-                y: 50,
+                y: 120,
                 width: 120,
                 height: 120
-            },
+            }/*,
             {
                 x: 750,
                 y: 190,
                 width: 120,
                 height: 120
-            }
+            }*/
         ]
     },
     regex: {

@@ -33,6 +33,7 @@ tr.header td {
 
 #leftbar {
 	border-right: 1px solid black;
+	height: 100%;
 }
 
 #speed_text {

@@ -25,12 +25,15 @@ function extend(obj, props) {
     });
 }
 
-function rect(canvas, props, content) {
+function rect(canvas, props, content, isDisposer) {
     var rect = canvas.rect(props.x, props.y, props.width, props.height);
     rect.attr("fill", Settings.ui.boxFillColor);
     rect.attr("stroke", Settings.ui.boxStrokeColor);
     var textX = props.x + props.width/2;
     var textY = props.y + props.height/2 - 12;
+    if (isDisposer) {
+        textY -= 28;
+    }
     var text = canvas.multitext(textX, textY, content);
     text.attr({
         "font-size": 20,
@@ -101,12 +104,12 @@ Interface.prototype.renderDisposers = function() {
     var settings = Settings.ui.disposers;
     if (!this.disposers) {
         this.disposers = [];
-        this.disposers.push(rect(this.canvas, settings[0], ""));
-        this.disposers.push(rect(this.canvas, settings[1], ""));        
+        this.disposers.push(rect(this.canvas, settings[0], "", true));
+        // this.disposers.push(rect(this.canvas, settings[1], ""));        
     }
 
-    retext(this.disposers[0], settings[0], "Fim\n(sucesso)\n" + Stats.success);
-    retext(this.disposers[1], settings[1], "Fim\n(falha)\n" + Stats.failure);
+    retext(this.disposers[0], settings[0], "Fim\nSucesso:\n" + Stats.success + "\nFalha:\n" + Stats.failure);
+    // retext(this.disposers[1], settings[1], "Fim\n(falha)\n" + Stats.failure);
 };
 
 Interface.prototype.renderEdges = function() {
@@ -138,7 +141,7 @@ Interface.prototype.renderEdges = function() {
     }
     // service centers -> disposers
     for (var i = 0; i < servCenters.length; i++) {
-        for (var j = 0; j < servCenters.length; j++) {
+        for (var j = 0; j < disposers.length; j++) {
             var center = servCenters[i];
             var disposer = disposers[j];
             line(this.canvas,

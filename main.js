@@ -37,6 +37,7 @@ function setDOMEvents() {
         if (ev.keyCode == 13) {
             this.value = Math.max(this.value, 0);
             speedSlider.value = this.value;
+            simulator.setSpeed(this.value);
         }
     });
 
