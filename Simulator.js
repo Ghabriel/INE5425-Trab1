@@ -1,15 +1,6 @@
 (function() {
 "use strict";
 
-var Simulator = function(ui) {
-	this.ui = ui;
-	this.timer = null;
-};
-
-function unify(value, speed) {
-	return value * 300 / speed;
-}
-
 function call(expression) {
 	var matches = expression.match(Settings.regex.functions);
 	if (!matches) {
@@ -43,10 +34,19 @@ function call(expression) {
 	return wrapper.exec();
 }
 
+var Simulator = function(ui) {
+	this.ui = ui;
+	this.timer = null;
+};
+
 Simulator.prototype.setSpeed = function(speed) {
 	this.speed = speed;
 	// TODO: bye cartinhas
 };
+
+Simulator.prototype.unify = function(value) {
+	return value * 300 / this.speed;
+}
 
 Simulator.prototype.spawnLocal = function() {
 	Stats.local++;
@@ -74,23 +74,22 @@ Simulator.prototype.spawnRemote = function() {
 
 Simulator.prototype.checkLocalSpawn = function() {
 	var self = this;
-	var localTec = Settings.timeBetweenArrivals.local;
-	var nextLocal = call(localTec);
+	var tba = Settings.timeBetweenArrivals.local;
+	var next = call(tba);
 	setTimeout(function() {
 		self.spawnLocal();
 		self.checkLocalSpawn();
-	}, unify(nextLocal, this.speed));
+	}, this.unify(next));
 };
 
 Simulator.prototype.checkRemoteSpawn = function() {
 	var self = this;
-	var remoteTec = Settings.timeBetweenArrivals.remote;
-	var nextRemote = call(remoteTec);
-
+	var tba = Settings.timeBetweenArrivals.remote;
+	var next = call(tba);
 	setTimeout(function() {
 		self.spawnRemote();
 		self.checkRemoteSpawn();
-	}, unify(nextRemote, this.speed));
+	}, this.unify(next));
 };
 
 Simulator.prototype.play = function() {
