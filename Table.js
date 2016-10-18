@@ -19,7 +19,14 @@ Table.trafficDistribution = function() {
         content: [
             ["Proporção (%)", params.LL, params.LR, params.RL, params.RR]
         ],
-        edit: [null, behavior, behavior, behavior, behavior]
+        edit: [null, behavior, behavior, behavior, behavior],
+        classNames: [
+            ["",
+            "trafficDistribution.LL",
+            "trafficDistribution.LR",
+            "trafficDistribution.RL",
+            "trafficDistribution.RR"]
+        ]
     };
 };
 
@@ -36,7 +43,29 @@ Table.successRate = function() {
         title: "Status por direção da mensagem",
         headers: ["Direção", "Sucesso", "Fracasso", "Adiamento", "Total"],
         content: content,
-        edit: [null, behavior, behavior, behavior, totalBehavior]
+        edit: [null, behavior, behavior, behavior, totalBehavior],
+        classNames: [
+            ["",
+            "successRate.LL.success",
+            "successRate.LL.failure",
+            "successRate.LL.delay",
+            ""],
+            ["",
+            "successRate.LR.success",
+            "successRate.LR.failure",
+            "successRate.LR.delay",
+            ""],
+            ["",
+            "successRate.RL.success",
+            "successRate.RL.failure",
+            "successRate.RL.delay",
+            ""],
+            ["",
+            "successRate.RR.success",
+            "successRate.RR.failure",
+            "successRate.RR.delay",
+            ""]
+        ]
     };
 };
 
@@ -50,7 +79,11 @@ Table.timeBetweenArrivals = function() {
             ["Local", params.local],
             ["Remota", params.remote]
         ],
-        edit: [null, behavior]
+        edit: [null, behavior],
+        classNames: [
+            ["", "timeBetweenArrivals.local"],
+            ["", "timeBetweenArrivals.remote"]
+        ]
     };
 };
 
@@ -65,7 +98,21 @@ Table.serviceTimes = function() {
         title: "Tempos de serviço (seg.)",
         headers: ["Tipo de Proc.", "Recepção", "Centro de Serviço"],
         content: content,
-        edit: [null, behavior, behavior]
+        edit: [null, behavior, behavior],
+        classNames: [
+            ["", "serviceTimes.LLS.reception", "serviceTimes.LLS.serviceCenter"],
+            ["", "serviceTimes.LLF.reception", "serviceTimes.LLF.serviceCenter"],
+            ["", "serviceTimes.LLA.reception", "serviceTimes.LLA.serviceCenter"],
+            ["", "serviceTimes.LRS.reception", "serviceTimes.LRS.serviceCenter"],
+            ["", "serviceTimes.LRF.reception", "serviceTimes.LRF.serviceCenter"],
+            ["", "serviceTimes.LRA.reception", "serviceTimes.LRA.serviceCenter"],
+            ["", "serviceTimes.RLS.reception", "serviceTimes.RLS.serviceCenter"],
+            ["", "serviceTimes.RLF.reception", "serviceTimes.RLF.serviceCenter"],
+            ["", "serviceTimes.RLA.reception", "serviceTimes.RLA.serviceCenter"],
+            ["", "serviceTimes.RRS.reception", "serviceTimes.RRS.serviceCenter"],
+            ["", "serviceTimes.RRF.reception", "serviceTimes.RRF.serviceCenter"],
+            ["", "serviceTimes.RRA.reception", "serviceTimes.RRA.serviceCenter"]
+        ]
     };
 };
 
@@ -128,6 +175,15 @@ function getValue(td) {
     return td.innerHTML;
 }
 
+function updateSettings(td, value) {
+    var props = td.classList[0].split(".");
+    var obj = Settings;
+    for (var j = 0; j < props.length - 1; j++) {
+        obj = obj[props[j]];
+    }
+    obj[props[props.length - 1]] = value;
+}
+
 function callEvents(td) {
     var events = settings.events;
     if (events.hasOwnProperty(td.id)) {
@@ -137,11 +193,13 @@ function callEvents(td) {
             if (event instanceof Filter) {
                 var regex = event.regex;
                 regex = new RegExp("^(" + regex.source + ")$", regex.flags);
-                var valid = regex.test(getValue(td));
+                var value = getValue(td);
+                var valid = regex.test(value);
                 var input = td.children[0];
                 if (valid) {
                     input.classList.remove("invalid");
                     input.classList.add("valid");
+                    updateSettings(td, value);
                 } else {
                     input.classList.remove("valid");
                     input.classList.add("invalid");
@@ -177,6 +235,12 @@ function bindBehaviorEvent(td, behavior, row) {
     }
 }
 
+function bindClass(td, className) {
+    if (className) {
+        td.classList.add(className);
+    }
+}
+
 Table.toHTML = function(info) {
     var table = create("table");
     prepareTitle(info.title, table, info.headers.length);
@@ -196,6 +260,7 @@ Table.toHTML = function(info) {
             prepareCell(td, content[i][j], behavior);
             // bindContent(content[i][j], td);
             bindBehaviorEvent(td, behavior, cells);
+            bindClass(td, info.classNames[i][j]);
             cells.push(td);
             tr.appendChild(td);
         }

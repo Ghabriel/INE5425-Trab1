@@ -9,7 +9,7 @@ function call(expression) {
 	}
 
 	var constRegex = Settings.regex.numbers;
-	var constant = new RegExp("^" + constRegex.source + "$", constRegex.flags);
+	var constant = new RegExp("^(" + constRegex.source + ")$", constRegex.flags);
 	if (constant.test(matches[0])) {
 		// Constant
 		return matches[0];
