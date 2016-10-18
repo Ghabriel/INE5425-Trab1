@@ -34,34 +34,11 @@ function call(expression) {
 	return wrapper.exec();
 }
 
-function insert(element, array, compare) {
-	array.splice(locationOf(element, array, compare) + 1, 0, element);
-	return array;
-}
-
-// performs binary search in a reverse-sorted array
-function locationOf(element, array, compare, start, end) {
-    if (array.length === 0)
-        return -1;
-
-    start = start || 0;
-    end = end || array.length;
-    var pivot = (start + end) >> 1;
-
-    var c = compare(element, array[pivot]);
-    if (end - start <= 1) return c == -1 ? pivot - 1 : pivot;
-
-    switch (c) {
-        case -1: return locationOf(element, array, compare, pivot, end);
-        case 1: return locationOf(element, array, compare, start, pivot);
-        case 0: return pivot;
-    };
-};
-
 var Simulator = function(ui) {
+	this.time = 0;
 	this.ui = ui;
 	this.paused = false;
-	this.eventCalendar = [];
+	this.eventCalendar = new EventCalendar();
 	this.addInitialEvents();
 };
 
@@ -99,6 +76,7 @@ Simulator.prototype.checkLocalSpawn = function() {
 	var tba = Settings.timeBetweenArrivals.local;
 	var next = call(tba);
 	var self = this;
+	// console.log("[" + (next + this.time) + "] local");
 	this.addEvent(next, function() {
 		self.spawnLocal();
 		self.checkLocalSpawn();
@@ -109,6 +87,7 @@ Simulator.prototype.checkRemoteSpawn = function() {
 	var tba = Settings.timeBetweenArrivals.remote;
 	var next = call(tba);
 	var self = this;
+	// console.log("[" + (next + this.time) + "] remote");
 	this.addEvent(next, function() {
 		self.spawnRemote();
 		self.checkRemoteSpawn();
@@ -123,15 +102,10 @@ Simulator.prototype.addInitialEvents = function() {
 Simulator.prototype.addEvent = function(time, callback) {
 	var calendar = this.eventCalendar;
 	var event = {
-		time: time,
+		time: time + this.time,
 		exec: callback
 	};
-	insert(event, calendar, function(lhs, rhs) {
-		if (lhs.time < rhs.time) return -1;
-		if (lhs.time > rhs.time) return 1;
-		return 0;
-	});
-	console.log(calendar);
+	calendar.push(event);
 };
 
 Simulator.prototype.step = function() {
@@ -139,20 +113,19 @@ Simulator.prototype.step = function() {
 		return;
 	}
 	var calendar = this.eventCalendar;
-	var event = calendar[calendar.length - 1];
+	var event = calendar.pop();
 	this.time = event.time;
 	event.exec();
 };
 
 Simulator.prototype.play = function(fastForward) {
-	this.time = 0;
 	var self = this;
 	var fn = function() {
 		var step = function() {
 			self.step();
 			fn();
 		}
-		if (self.eventCalendar.length > 0) {
+		if (!self.eventCalendar.empty()) {
 			if (fastForward) {
 				step();
 			} else {
