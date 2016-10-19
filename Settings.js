@@ -81,10 +81,10 @@ var Settings = {
         }
     },
     trafficDistribution: {
-        LL: 50,
-        LR: 25,
-        RL: 15,
-        RR: 5
+        LL: 66,
+        LR: 34,
+        RL: 75,
+        RR: 25
     },
     successRate: {
         LL: {

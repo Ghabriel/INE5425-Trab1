@@ -36,9 +36,26 @@ Random.wrap = function(distribution/*, ...params*/) {
         fn: Random[distribution],
         params: Array.prototype.slice.call(arguments, 1),
         exec: function() {
+            for (var i = 0; i < this.params.length; i++) {
+                this.params[i] *= 1;
+            }
             return this.fn.apply(Random, this.params);
         }
     };
+};
+
+Random.monteCarlo = function(options) {
+    var value = rand();
+    var sum = 0;
+    for (var i in options) {
+        if (options.hasOwnProperty(i)) {
+            sum += options[i] / 100;
+            if (sum >= value) {
+                return i;
+            }
+        }
+    }
+    return null;
 };
 
 window.Random = Random;
