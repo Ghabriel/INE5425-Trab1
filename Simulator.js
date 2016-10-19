@@ -1,11 +1,18 @@
 (function() {
 "use strict";
 
+var LOCAL = 0;
+var REMOTE = 1;
+
+var labels = {};
+labels[LOCAL] = "L";
+labels[REMOTE] = "R";
+
 function call(expression) {
 	var matches = expression.match(Settings.regex.functions);
 	if (!matches) {
 		// TODO: what to do?
-		return 666;
+		return -1;
 	}
 
 	var constRegex = Settings.regex.numbers;
@@ -40,6 +47,10 @@ var Simulator = function(ui) {
 	this.paused = false;
 	this.eventCalendar = new EventCalendar();
 	this.addInitialEvents();
+	this.atRecCenter = [];
+	this.atServCenter1 = [];
+	this.atServCenter2 = [];
+	this.atDisposer = [];
 };
 
 Simulator.prototype.setSpeed = function(speed) {
@@ -48,14 +59,47 @@ Simulator.prototype.setSpeed = function(speed) {
 	// TODO: bye cartinhas
 };
 
+Simulator.prototype.generateTarget = function(origin) {
+	var data = Settings.trafficDistribution;
+	var table = {};
+	Settings.foreach(data, function(name, chance) {
+		if (name[0] == labels[origin]) {
+			table[name] = chance;
+		}
+	});
+	// TODO
+	return LOCAL;
+	// return Random.monteCarlo(table);
+};
+
+Simulator.prototype.generateStatus = function(origin, target) {
+	var table = Settings.successRate[labels[origin] + labels[target]];
+	// TODO
+	return "success";
+	// return Random.monteCarlo(table);
+};
+
+Simulator.prototype.generateMail = function(origin) {
+	var target = this.generateTarget(origin);
+	var status = this.generateStatus(origin, target);
+	return {
+		origin: origin,
+		target: target,
+		status: status
+	};
+};
+
 Simulator.prototype.spawnLocal = function() {
 	Stats.local++;
 	var settings = Settings.ui;
 	var ui = this.ui;
 	ui.render();
+	var self = this;
+	var mail = this.generateMail(LOCAL);
 	ui.spawnMail(this.speed, settings.spawners[0],
 			     settings.serviceCenter.main, function() {
 		Stats.atReceptionCenter++;
+		self.atRecCenter.push(mail);
 		ui.render();
 	});
 };
@@ -65,9 +109,12 @@ Simulator.prototype.spawnRemote = function() {
 	var settings = Settings.ui;
 	var ui = this.ui;
 	ui.render();
+	var self = this;
+	var mail = this.generateMail(REMOTE);
 	ui.spawnMail(this.speed, settings.spawners[1],
 				 settings.serviceCenter.main, function() {
 		Stats.atReceptionCenter++;
+		self.atRecCenter.push(mail);
 		ui.render();
 	});
 };
@@ -76,7 +123,6 @@ Simulator.prototype.checkLocalSpawn = function() {
 	var tba = Settings.timeBetweenArrivals.local;
 	var next = call(tba);
 	var self = this;
-	// console.log("[" + (next + this.time) + "] local");
 	this.addEvent(next, function() {
 		self.spawnLocal();
 		self.checkLocalSpawn();
@@ -87,7 +133,6 @@ Simulator.prototype.checkRemoteSpawn = function() {
 	var tba = Settings.timeBetweenArrivals.remote;
 	var next = call(tba);
 	var self = this;
-	// console.log("[" + (next + this.time) + "] remote");
 	this.addEvent(next, function() {
 		self.spawnRemote();
 		self.checkRemoteSpawn();
@@ -100,20 +145,17 @@ Simulator.prototype.addInitialEvents = function() {
 };
 
 Simulator.prototype.addEvent = function(time, callback) {
-	var calendar = this.eventCalendar;
-	var event = {
+	this.eventCalendar.push({
 		time: time + this.time,
 		exec: callback
-	};
-	calendar.push(event);
+	});
 };
 
 Simulator.prototype.step = function() {
 	if (this.paused) {
 		return;
 	}
-	var calendar = this.eventCalendar;
-	var event = calendar.pop();
+	var event = this.eventCalendar.pop();
 	this.time = event.time;
 	event.exec();
 };
