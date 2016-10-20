@@ -67,6 +67,10 @@ var Interface = function(container) {
     container.appendChild(this.canvas.node);
 };
 
+Interface.prototype.interval = function(speed) {
+    return Settings.mailInterval(speed);
+};
+
 Interface.prototype.render = function() {
     this.renderSpawners();
     this.renderServiceCenters();
@@ -158,7 +162,6 @@ Interface.prototype.spawnMail = function(speed, origin, destination, callback) {
         self.canvas.append(mail);
 
         var scale = 3;
-        var interval = 600 / speed;
 
         var scene = new Snap.Matrix();
         scene.translate(origin.x + origin.width,
@@ -176,7 +179,7 @@ Interface.prototype.spawnMail = function(speed, origin, destination, callback) {
         scene.translate(dx/scale, dy/scale);
         mail.animate({
             transform: scene
-        }, interval, function() {
+        }, self.interval(speed), function() {
             mail.remove();
             callback();
         });

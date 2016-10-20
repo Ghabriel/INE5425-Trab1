@@ -5,6 +5,12 @@ var Settings = {
     width: 900,
     height: 350,
     mailURL: "images/envelope.svg",
+    mailInterval: function(speed) {
+        return 600 / speed;
+    },
+    simulationInterval: function(speed) {
+        return 300 / speed;
+    },
     ui: {
         boxFillColor: "white",
         boxStrokeColor: "black",
@@ -88,23 +94,23 @@ var Settings = {
     },
     successRate: {
         LL: {
-            success: 87,
-            failure: 0.5,
+            success: 82.5,
+            failure: 5,
             delay: 12.5
         },
         LR: {
-            success: 96,
-            failure: 1.5,
+            success: 82.5,
+            failure: 15,
             delay: 2.5
         },
         RL: {
-            success: 96,
-            failure: 3,
+            success: 84,
+            failure: 15,
             delay: 1
         },
         RR: {
-            success: 90,
-            failure: 1,
+            success: 86,
+            failure: 5,
             delay: 9
         }
     },

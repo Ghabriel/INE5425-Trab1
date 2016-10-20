@@ -60,7 +60,7 @@ var Simulator = function(ui) {
 
 Simulator.prototype.setSpeed = function(speed) {
 	this.speed = speed;
-	this.interval = 300 / speed; // TODO
+	this.interval = Settings.simulationInterval(speed);
 	// TODO: bye cartinhas
 };
 
@@ -199,9 +199,19 @@ Simulator.prototype.serviceCenterEntrance = function(mail) {
 			Stats[prop]--;
 			self[prop].pop();
 			ui.render();
-			// TODO
+			// TODO: delay
+			self.disposerEntrance(mail);
 		});
 	});
+};
+
+Simulator.prototype.disposerEntrance = function(mail) {
+	var status = mail.status.success;
+	if (status) {
+		Stats.success++;
+	} else {
+		Stats.failure++;
+	}
 };
 
 Simulator.prototype.addInitialEvents = function() {
