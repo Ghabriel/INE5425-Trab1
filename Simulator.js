@@ -50,6 +50,7 @@ var Simulator = function(ui) {
 	this.ui = ui;
 	this.started = false;
 	this.paused = false;
+	this.animating = false;
 	this.eventCalendar = new EventCalendar();
 	this.addInitialEvents();
 	this.atRecCenter = new Queue();
@@ -111,10 +112,10 @@ Simulator.prototype.generateMail = function(origin) {
 
 Simulator.prototype.spawnMail = function(speed, origin, destination, callback) {
 	var self = this;
-	self.pause();
+	this.animating = true;
 	this.ui.spawnMail(speed, origin, destination, function() {
 		callback();
-		self.play();
+		self.animating = false;
 	});
 };
 
@@ -173,7 +174,6 @@ Simulator.prototype.receptionEntrance = function(mail) {
 
 	var receptionTime = Settings.serviceTimes[mail.toString()].reception;
 	var next = call(receptionTime);
-	// console.log("Reception: " + next);
 
 	var settings = Settings.ui;
 	var self = this;
@@ -201,11 +201,9 @@ Simulator.prototype.serviceCenterEntrance = function(mail) {
 
 	var serviceTime = Settings.serviceTimes[mail.toString()].serviceCenter;
 	var next = call(serviceTime);
-	// console.log("Service: " + next);
 
 	var settings = Settings.ui;
 	var self = this;
-	var triggerTime = next + this.time;
 	this.addEvent(next, function() {
 		var target = (isLocal) ? "first" : "second";
 		Stats[prop]--;
@@ -218,25 +216,16 @@ Simulator.prototype.serviceCenterEntrance = function(mail) {
 		} else {
 			self.spawnMail(self.speed, settings.serviceCenter[target],
 						 settings.disposers[0], function() {
-				self.disposerEntrance(mail, triggerTime);
+				self.disposerEntrance(mail);
 			});
 		}
 	});
 };
 
-Simulator.prototype.disposerEntrance = function(mail, time) {
-	var status = mail.status.success;
-	if (status) {
-		Stats.success++;
-	} else {
-		Stats.failure++;
-	}
+Simulator.prototype.disposerEntrance = function(mail) {
+	mail.finish = this.time;
+	Stats.finished(mail);
 	this.ui.render();
-
-	mail.finish = time;
-	console.log(mail.entrance, mail.finish, mail.finish - mail.entrance);
-	// console.log(mail.finish - mail.entrance);
-	Stats.finished.push(mail);
 };
 
 Simulator.prototype.addInitialEvents = function() {
@@ -252,7 +241,7 @@ Simulator.prototype.addEvent = function(time, callback) {
 };
 
 Simulator.prototype.step = function() {
-	if (this.paused) {
+	if (this.paused || this.animating) {
 		return;
 	}
 	var event = this.eventCalendar.pop();

@@ -9,7 +9,33 @@ var Stats = {
 	atServiceCenter2: 0,
 	success: 0,
 	failure: 0,
-	finished: new Queue()
+
+	minTravelTime: Infinity,
+	maxTravelTime: -Infinity,
+	avgTravelTime: 0
+};
+
+
+Stats.finished = function(mail) {
+	var numFinished = this.success + this.failure;
+	var travelTime = mail.finish - mail.entrance;
+	var avg = this.avgTravelTime;
+	this.avgTravelTime = (avg * numFinished + travelTime) / (numFinished + 1);
+
+	if (travelTime < this.minTravelTime) {
+		this.minTravelTime = travelTime;
+	}
+
+	if (travelTime > this.maxTravelTime) {
+		this.maxTravelTime = travelTime;
+	}
+
+	var status = mail.status.success;
+	if (status) {
+		this.success++;
+	} else {
+		this.failure++;
+	}
 };
 
 window.Stats = Stats;
