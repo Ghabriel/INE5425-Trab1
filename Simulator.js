@@ -46,13 +46,15 @@ function call(expression) {
 }
 
 var Simulator = function(ui) {
-	this.time = 0;
 	this.ui = ui;
+};
+
+Simulator.prototype.setup = function() {
+	this.time = 0;
 	this.started = false;
 	this.paused = false;
 	this.animating = false;
 	this.eventCalendar = new EventCalendar();
-	this.addInitialEvents();
 	this.atRecCenter = new Queue();
 	this.atServiceCenter1 = new Queue();
 	this.atServiceCenter2 = new Queue();
@@ -293,6 +295,7 @@ Simulator.prototype.exec = function() {
 
 	this.time = Settings.general.simulationTime;
 	this.ui.printStats(this.time);
+	this.started = false;
 	this.report();
 }
 
@@ -301,6 +304,10 @@ Simulator.prototype.play = function(fastForward) {
 		this.paused = false;
 		return;
 	}
+	Stats.reset();
+	this.setup();
+	this.addInitialEvents();
+
 	this.started = true;
 	this.fastForward = fastForward;
 	this.exec();

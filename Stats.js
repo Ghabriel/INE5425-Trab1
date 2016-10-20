@@ -1,34 +1,43 @@
 (function() {
 "use strict";
 
-var Stats = {
-	local: 0,
-	remote: 0,
-	atReceptionCenter: 0,
-	atServiceCenter1: 0,
-	atServiceCenter2: 0,
-	success: 0,
-	failure: 0,
+var Stats = {};
+Stats.reset = function() {
+	var props = {
+		local: 0,
+		remote: 0,
+		atReceptionCenter: 0,
+		atServiceCenter1: 0,
+		atServiceCenter2: 0,
+		success: 0,
+		failure: 0,
 
-	minTravelTime: Infinity,
-	maxTravelTime: -Infinity,
-	avgTravelTime: 0,
-	
-	numMessages: 0,
-	minNumMessages: 0,
-	maxNumMessages: 0,
-	timePerAmount: {},
-	numMessageLastChange: 0,
-	
-	recCenterTimePerAmount: {},
-	recCenterLastChange: 0,
+		minTravelTime: Infinity,
+		maxTravelTime: -Infinity,
+		avgTravelTime: 0,
 
-	localServCenterTimePerAmount: {},
-	localServCenterLastChange: 0,
+		numMessages: 0,
+		minNumMessages: 0,
+		maxNumMessages: 0,
+		timePerAmount: {},
+		numMessageLastChange: 0,
 
-	remoteServCenterTimePerAmount: {},
-	remoteServCenterLastChange: 0
-};
+		recCenterTimePerAmount: {},
+		recCenterLastChange: 0,
+
+		localServCenterTimePerAmount: {},
+		localServCenterLastChange: 0,
+
+		remoteServCenterTimePerAmount: {},
+		remoteServCenterLastChange: 0
+	};
+
+	for (var i in props) {
+		if (props.hasOwnProperty(i)) {
+			this[i] = props[i];
+		}
+	}
+}
 
 Stats.weightedAverage = function(prop) {
 	var sum = 0;
@@ -155,6 +164,7 @@ Stats.finished = function(mail) {
 	}
 };
 
+Stats.reset();
 window.Stats = Stats;
 
 })();
