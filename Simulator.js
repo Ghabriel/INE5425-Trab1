@@ -169,11 +169,11 @@ Simulator.prototype.receptionEntrance = function(mail) {
 	this.addEvent(next, function() {
 		var isLocal = (mail.origin == LOCAL);
 		var target = (isLocal) ? "first" : "second";
+		Stats.atReceptionCenter--;
+		self.atRecCenter.pop();
+		ui.render();
 		ui.spawnMail(self.speed, settings.serviceCenter.main,
 					 settings.serviceCenter[target], function() {
-			Stats.atReceptionCenter--;
-			self.atRecCenter.pop();
-			ui.render();
 			self.serviceCenterEntrance(mail);
 		});
 	});
@@ -195,14 +195,18 @@ Simulator.prototype.serviceCenterEntrance = function(mail) {
 	var self = this;
 	this.addEvent(next, function() {
 		var target = (isLocal) ? "first" : "second";
-		ui.spawnMail(self.speed, settings.serviceCenter[target],
-					 settings.disposers[0], function() {
-			Stats[prop]--;
-			self[prop].pop();
-			ui.render();
-			// TODO: delay
-			self.disposerEntrance(mail);
-		});
+		Stats[prop]--;
+		self[prop].pop();
+		ui.render();
+		var delays = mail.status.delays;
+		if (delays > 0) {
+			ui.potato(self.speed, settings.serviceCenter.first);
+		} else {
+			ui.spawnMail(self.speed, settings.serviceCenter[target],
+						 settings.disposers[0], function() {
+				self.disposerEntrance(mail);
+			});
+		}
 	});
 };
 

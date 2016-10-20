@@ -5,6 +5,7 @@ var Settings = {
     width: 900,
     height: 350,
     mailURL: "images/envelope.svg",
+    mailScaling: 3,
     mailInterval: function(speed) {
         return 600 / speed;
     },
@@ -94,24 +95,24 @@ var Settings = {
     },
     successRate: {
         LL: {
-            success: 82.5,
-            failure: 5,
-            delay: 12.5
+            success: 0.5,
+            failure: 0.5,
+            delay: 99
         },
         LR: {
-            success: 82.5,
-            failure: 15,
-            delay: 2.5
+            success: 0.5,
+            failure: 0.5,
+            delay: 99
         },
         RL: {
-            success: 84,
-            failure: 15,
-            delay: 1
+            success: 0.5,
+            failure: 0.5,
+            delay: 99
         },
         RR: {
-            success: 86,
-            failure: 5,
-            delay: 9
+            success: 0.5,
+            failure: 0.5,
+            delay: 99
         }
     },
     timeBetweenArrivals: {
