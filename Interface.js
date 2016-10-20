@@ -60,7 +60,7 @@ var retext = function(container, props, txt) {
 
 var Interface = function(container) {
     this.canvas = Snap(Settings.width, Settings.height);
-	this.statsContainer = null;
+    this.statsContainer = null;
     this.spawners = null;
     this.serviceCenters = null;
     this.disposers = null;
@@ -69,90 +69,86 @@ var Interface = function(container) {
 };
 
 Interface.prototype.setStatsContainer = function(container) {
-	this.statsContainer = container;
+    this.statsContainer = container;
 };
 
 Interface.prototype.printStats = function() {
-	var info = [
-		{
-			title: "Estatísticas"
-		},
-		{
-			title: "Mensagens no sistema"
-		},
-		{
-			content: ["Mínimo:", Stats.minNumMessages]
-		},
-		{
-			content: ["Máximo:", Stats.maxNumMessages]
-		},
-		{
-			content: ["Média:", Stats.avgNumMessages()]
-		},
-		{
-			title: "Ocupação média dos centros"
-		},
-		{
-			content: ["Recepção:", Stats.avgRecCenterOcupation()]
-		},
-		{
-			content: ["Serviço 1 (local):", Stats.avgLocalServCenterOcupation()]
-		},
-		{
-			content: ["Serviço 2 (remoto):", Stats.avgRemoteServCenterOcupation()]
-		},
-		{
-			title: "Tempo de trânsito"
-		},
-		{
-			content: ["Mínimo:", Stats.minTravelTime]
-		},
-		{
-			content: ["Máximo:", Stats.maxTravelTime]
-		},
-		{
-			content: ["Média:", Stats.avgTravelTime]
-		},
-		{
-			title: "Mensagens despachadas"
-		},
-		{
-			content: ["Valor:", Stats.success + Stats.failure]
-		},
-		{
-			title: "Mensagens por tipo"
-		},
-		{
-			content: ["Local:", Stats.local]
-		},
-		{
-			content: ["Remota:", Stats.remote]
-		}
-	];
-	var table = document.createElement("table");
-	for (var i = 0; i < info.length; i++) {
-		var data = info[i];
-		var tr = document.createElement("tr");
-		if (data.title) {
-			var td = document.createElement("td");
-			// TODO: make this a title
-			td.colSpan = 2;
-			td.innerHTML = data.title;
-			tr.appendChild(td);
-		} else {
-			var values = data.content;
-			for (var j = 0; j < values.length; j++) {
-				var td = document.createElement("td");
-				td.innerHTML = values[j];
-				tr.appendChild(td);
-			}
-		}
-		table.appendChild(tr);
-	}
+    var info = [
+        {
+            title: "Estatísticas"
+        },
+        {
+            title: "Mensagens no sistema",
+            content: [
+                ["Mínimo:", Stats.minNumMessages],
+                ["Máximo:", Stats.maxNumMessages],
+                ["Média:", Stats.avgNumMessages()]
+            ]
+        },
+        {
+            title: "Ocupação média dos centros",
+            content: [
+                ["Recepção:", Stats.avgRecCenterOcupation()],
+                ["Serviço 1 (local):", Stats.avgLocalServCenterOcupation()],
+                ["Serviço 2 (remoto):", Stats.avgRemoteServCenterOcupation()]
+            ]
+        },
+        {
+            title: "Tempo de trânsito",
+            content: [
+                ["Mínimo:", Stats.minTravelTime],
+                ["Máximo:", Stats.maxTravelTime],
+                ["Média:", Stats.avgTravelTime]
+            ]
+        },
+        {
+            title: "Mensagens despachadas",
+            content: [
+                ["Total:", Stats.success + Stats.failure],
+                ["Sucesso:", Stats.success],
+                ["Falha:", Stats.failure]
+            ]
+        },
+        {
+            title: "Mensagens por tipo",
+            content: [
+                ["Local:", Stats.local],
+                ["Remota:", Stats.remote]
+            ]
+        },
+    ];
+    var table = document.createElement("table");
+    table.id = "stats_table";
+    for (var i = 0; i < info.length; i++) {
+        var data = info[i];
+        if (data.title) {
+            var tr = document.createElement("tr");
+            tr.classList.add("title");
+            var td = document.createElement("td");
+            td.colSpan = 2;
+            td.innerHTML = data.title;
+            tr.appendChild(td);
+            table.appendChild(tr);
+        }
 
-	var container = this.statsContainer;
-	container.innerHTML = "";
-	container.appendChild(table);
+        if (data.content) {
+            var rows = data.content;
+            for (var j = 0; j < rows.length; j++) {
+                var tr = document.createElement("tr");
+                for (var k = 0; k < rows[j].length; k++) {
+                    var td = document.createElement("td");
+                    td.innerHTML = rows[j][k];
+                    tr.appendChild(td);
+                }
+                table.appendChild(tr);
+            }
+        }
+        table.appendChild(tr);
+    }
+
+    var container = this.statsContainer;
+    container.innerHTML = "";
+    container.appendChild(table);
 };
 
 Interface.prototype.interval = function(speed) {

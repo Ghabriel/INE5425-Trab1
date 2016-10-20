@@ -31,7 +31,6 @@ var Stats = {
 };
 
 Stats.weightedAverage = function(prop) {
-	console.log(this[prop]);
 	var sum = 0;
 	var totalTime = 0;
 	for (var i in this[prop]) {

@@ -214,15 +214,15 @@ Simulator.prototype.serviceCenterEntrance = function(mail) {
 		self[prop].pop();
 		ui.render();
 		var delays = mail.status.delays;
-		if (delays > 0) {
-			// TODO
-			// ui.potato(self.speed, settings.serviceCenter.first);
-		} else {
+		// if (delays > 0) {
+		// 	// TODO
+		// 	// ui.potato(self.speed, settings.serviceCenter.first);
+		// } else {
 			self.spawnMail(self.speed, settings.serviceCenter[target],
 						 settings.disposers[0], function() {
 				self.disposerEntrance(mail);
 			});
-		}
+		// }
 	});
 };
 

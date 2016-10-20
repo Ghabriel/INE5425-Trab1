@@ -49,6 +49,14 @@ tr.header td {
 	vertical-align: middle;
 }
 
+#stats_table tr.title td {
+	background-color: #DDD;
+}
+
+#stats_table tr:not(.title) td {
+	width: 50%;
+}
+
 input[type="text"] {
 	text-align: center;
 }
