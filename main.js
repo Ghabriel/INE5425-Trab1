@@ -20,6 +20,7 @@ function setDOMEvents() {
     var speedText = $("#speed_text");
     var playButton = $("#play_btn");
     var pauseButton = $("#pause_btn");
+    var fastForwardButton = $("#ffw_btn");
     var settingsButton = $("#settings_btn");
 
     leftBar.style.display = "none";
@@ -42,11 +43,15 @@ function setDOMEvents() {
     });
 
     playButton.addEventListener("click", function() {
-        simulator.play();
+        simulator.play(false);
     });
 
     pauseButton.addEventListener("click", function() {
         simulator.pause();
+    });
+
+    fastForwardButton.addEventListener("click", function() {
+        simulator.play(true);
     });
 
     settingsButton.addEventListener("click", function() {

@@ -111,12 +111,16 @@ Simulator.prototype.generateMail = function(origin) {
 };
 
 Simulator.prototype.spawnMail = function(speed, origin, destination, callback) {
-	var self = this;
-	this.animating = true;
-	this.ui.spawnMail(speed, origin, destination, function() {
+	if (this.fastForward) {
 		callback();
-		self.animating = false;
-	});
+	} else {
+		var self = this;
+		this.animating = true;
+		this.ui.spawnMail(speed, origin, destination, function() {
+			callback();
+			self.animating = false;
+		});
+	}
 };
 
 Simulator.prototype.spawnLocal = function() {
@@ -264,7 +268,9 @@ Simulator.prototype.step = function() {
 	var event = this.eventCalendar.pop();
 	this.time = event.time;
 	event.exec();
-	this.ui.printStats(this.time);
+	if (!this.fastForward) {
+		this.ui.printStats(this.time);
+	}
 };
 
 Simulator.prototype.exec = function() {
@@ -273,28 +279,30 @@ Simulator.prototype.exec = function() {
 		self.step();
 		self.exec();
 	}
-	if (!this.eventCalendar.empty()) {
-		if (this.fastForward) {
-			step();
-		} else {
-			setTimeout(function() {
-				step();
-			}, this.interval);
+
+	if (this.fastForward) {
+		while (!this.eventCalendar.empty()) {
+			this.step();
 		}
-	} else {
-		this.time = Settings.general.simulationTime;
-		this.ui.printStats(this.time);
-		this.report();
+	} else if (!this.eventCalendar.empty()) {
+		setTimeout(function() {
+			step();
+		}, this.interval);
+		return;
 	}
+
+	this.time = Settings.general.simulationTime;
+	this.ui.printStats(this.time);
+	this.report();
 }
 
-Simulator.prototype.play = function() {
+Simulator.prototype.play = function(fastForward) {
 	if (this.started) {
 		this.paused = false;
 		return;
 	}
 	this.started = true;
-	this.fastForward = false;
+	this.fastForward = fastForward;
 	this.exec();
 };
 

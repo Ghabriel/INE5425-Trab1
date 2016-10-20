@@ -88,7 +88,7 @@ var Settings = {
         }
     },
     general: {
-        simulationTime: 30,
+        simulationTime: 45,
         maxTravelTime: 1,
         numServers: {
             local: 10,
