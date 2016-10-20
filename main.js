@@ -71,6 +71,7 @@ function printAllTables() {
 function printInterface() {
     var container = $("#content");
     var ui = new Interface(container);
+	ui.setStatsContainer($("#stats"));
     ui.render();
     simulator = new Simulator(ui);
     simulator.setSpeed(speed());

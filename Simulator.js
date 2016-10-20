@@ -121,6 +121,7 @@ Simulator.prototype.spawnMail = function(speed, origin, destination, callback) {
 
 Simulator.prototype.spawnLocal = function() {
 	Stats.local++;
+	Stats.addMail(this.time);
 	var settings = Settings.ui;
 	var ui = this.ui;
 	ui.render();
@@ -135,6 +136,7 @@ Simulator.prototype.spawnLocal = function() {
 
 Simulator.prototype.spawnRemote = function() {
 	Stats.remote++;
+	Stats.addMail(this.time);
 	var settings = Settings.ui;
 	var ui = this.ui;
 	ui.render();
@@ -167,7 +169,7 @@ Simulator.prototype.checkRemoteSpawn = function() {
 };
 
 Simulator.prototype.receptionEntrance = function(mail) {
-	Stats.atReceptionCenter++;
+	Stats.receptionEntrance(this.time);
 	this.atRecCenter.push(mail);
 	var ui = this.ui;
 	ui.render();
@@ -180,7 +182,7 @@ Simulator.prototype.receptionEntrance = function(mail) {
 	this.addEvent(next, function() {
 		var isLocal = (mail.origin == LOCAL);
 		var target = (isLocal) ? "first" : "second";
-		Stats.atReceptionCenter--;
+		Stats.receptionExit(self.time);
 		self.atRecCenter.pop();
 		ui.render();
 		self.spawnMail(self.speed, settings.serviceCenter.main,
@@ -193,8 +195,10 @@ Simulator.prototype.receptionEntrance = function(mail) {
 Simulator.prototype.serviceCenterEntrance = function(mail) {
 	var isLocal = (mail.origin == LOCAL);
 	var prop = (isLocal) ? "atServiceCenter1" : "atServiceCenter2";
-
-	Stats[prop]++;
+	var stat = (isLocal) ? "localServEntrance" : "remoteServEntrance";
+	var exitStat = (isLocal) ? "localServExit" : "remoteServExit";
+	
+	Stats[stat](this.time);
 	this[prop].push(mail);
 	var ui = this.ui;
 	ui.render();
@@ -206,7 +210,7 @@ Simulator.prototype.serviceCenterEntrance = function(mail) {
 	var self = this;
 	this.addEvent(next, function() {
 		var target = (isLocal) ? "first" : "second";
-		Stats[prop]--;
+		Stats[exitStat](self.time);
 		self[prop].pop();
 		ui.render();
 		var delays = mail.status.delays;
@@ -247,6 +251,7 @@ Simulator.prototype.step = function() {
 	var event = this.eventCalendar.pop();
 	this.time = event.time;
 	event.exec();
+	this.ui.printStats();
 };
 
 Simulator.prototype.play = function(fastForward) {
