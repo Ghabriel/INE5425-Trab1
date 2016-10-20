@@ -48,6 +48,7 @@ function call(expression) {
 var Simulator = function(ui) {
 	this.time = 0;
 	this.ui = ui;
+	this.started = false;
 	this.paused = false;
 	this.eventCalendar = new EventCalendar();
 	this.addInitialEvents();
@@ -212,6 +213,7 @@ Simulator.prototype.disposerEntrance = function(mail) {
 	} else {
 		Stats.failure++;
 	}
+	this.ui.render();
 };
 
 Simulator.prototype.addInitialEvents = function() {
@@ -236,6 +238,11 @@ Simulator.prototype.step = function() {
 };
 
 Simulator.prototype.play = function(fastForward) {
+	if (this.started) {
+		this.paused = false;
+		return;
+	}
+	this.started = true;
 	var self = this;
 	var fn = function() {
 		var step = function() {
