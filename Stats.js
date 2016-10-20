@@ -8,7 +8,8 @@ var Stats = {
 	atServiceCenter1: 0,
 	atServiceCenter2: 0,
 	success: 0,
-	failure: 0
+	failure: 0,
+	finished: new Queue()
 };
 
 window.Stats = Stats;

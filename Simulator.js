@@ -94,6 +94,7 @@ Simulator.prototype.generateMail = function(origin) {
 	var target = this.generateTarget(origin);
 	var status = this.generateStatus(origin, target);
 	return {
+		entrance: this.time,
 		origin: origin,
 		target: target,
 		status: status,
@@ -108,6 +109,15 @@ Simulator.prototype.generateMail = function(origin) {
 	};
 };
 
+Simulator.prototype.spawnMail = function(speed, origin, destination, callback) {
+	var self = this;
+	self.pause();
+	this.ui.spawnMail(speed, origin, destination, function() {
+		callback();
+		self.play();
+	});
+};
+
 Simulator.prototype.spawnLocal = function() {
 	Stats.local++;
 	var settings = Settings.ui;
@@ -115,7 +125,7 @@ Simulator.prototype.spawnLocal = function() {
 	ui.render();
 	var mail = this.generateMail(LOCAL);
 	var self = this;
-	ui.spawnMail(this.speed, settings.spawners[0],
+	this.spawnMail(this.speed, settings.spawners[0],
 				 settings.serviceCenter.main, function() {
 		self.receptionEntrance(mail);
 		ui.render();
@@ -129,7 +139,7 @@ Simulator.prototype.spawnRemote = function() {
 	ui.render();
 	var mail = this.generateMail(REMOTE);
 	var self = this;
-	ui.spawnMail(this.speed, settings.spawners[1],
+	this.spawnMail(this.speed, settings.spawners[1],
 				 settings.serviceCenter.main, function() {
 		self.receptionEntrance(mail);
 	});
@@ -163,6 +173,7 @@ Simulator.prototype.receptionEntrance = function(mail) {
 
 	var receptionTime = Settings.serviceTimes[mail.toString()].reception;
 	var next = call(receptionTime);
+	// console.log("Reception: " + next);
 
 	var settings = Settings.ui;
 	var self = this;
@@ -172,7 +183,7 @@ Simulator.prototype.receptionEntrance = function(mail) {
 		Stats.atReceptionCenter--;
 		self.atRecCenter.pop();
 		ui.render();
-		ui.spawnMail(self.speed, settings.serviceCenter.main,
+		self.spawnMail(self.speed, settings.serviceCenter.main,
 					 settings.serviceCenter[target], function() {
 			self.serviceCenterEntrance(mail);
 		});
@@ -190,9 +201,11 @@ Simulator.prototype.serviceCenterEntrance = function(mail) {
 
 	var serviceTime = Settings.serviceTimes[mail.toString()].serviceCenter;
 	var next = call(serviceTime);
+	// console.log("Service: " + next);
 
 	var settings = Settings.ui;
 	var self = this;
+	var triggerTime = next + this.time;
 	this.addEvent(next, function() {
 		var target = (isLocal) ? "first" : "second";
 		Stats[prop]--;
@@ -200,17 +213,18 @@ Simulator.prototype.serviceCenterEntrance = function(mail) {
 		ui.render();
 		var delays = mail.status.delays;
 		if (delays > 0) {
-			ui.potato(self.speed, settings.serviceCenter.first);
+			// TODO
+			// ui.potato(self.speed, settings.serviceCenter.first);
 		} else {
-			ui.spawnMail(self.speed, settings.serviceCenter[target],
+			self.spawnMail(self.speed, settings.serviceCenter[target],
 						 settings.disposers[0], function() {
-				self.disposerEntrance(mail);
+				self.disposerEntrance(mail, triggerTime);
 			});
 		}
 	});
 };
 
-Simulator.prototype.disposerEntrance = function(mail) {
+Simulator.prototype.disposerEntrance = function(mail, time) {
 	var status = mail.status.success;
 	if (status) {
 		Stats.success++;
@@ -218,6 +232,11 @@ Simulator.prototype.disposerEntrance = function(mail) {
 		Stats.failure++;
 	}
 	this.ui.render();
+
+	mail.finish = time;
+	console.log(mail.entrance, mail.finish, mail.finish - mail.entrance);
+	// console.log(mail.finish - mail.entrance);
+	Stats.finished.push(mail);
 };
 
 Simulator.prototype.addInitialEvents = function() {
@@ -268,7 +287,6 @@ Simulator.prototype.play = function(fastForward) {
 
 Simulator.prototype.pause = function() {
 	this.paused = true;
-	// TODO: pause properly
 };
 
 window.Simulator = Simulator;

@@ -95,24 +95,24 @@ var Settings = {
     },
     successRate: {
         LL: {
-            success: 0.5,
-            failure: 0.5,
-            delay: 99
+            success: 82.5,
+            failure: 5,
+            delay: 12.5
         },
         LR: {
-            success: 0.5,
-            failure: 0.5,
-            delay: 99
+            success: 82.5,
+            failure: 15,
+            delay: 2.5
         },
         RL: {
-            success: 0.5,
-            failure: 0.5,
-            delay: 99
+            success: 84,
+            failure: 15,
+            delay: 1
         },
         RR: {
-            success: 0.5,
-            failure: 0.5,
-            delay: 99
+            success: 86,
+            failure: 5,
+            delay: 9
         }
     },
     timeBetweenArrivals: {

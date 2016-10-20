@@ -186,42 +186,42 @@ Interface.prototype.spawnMail = function(speed, origin, destination, callback) {
     });
 };
 
-Interface.prototype.potato = function(speed, origin) {
-    var self = this;
-    Snap.load("images/envelope.svg", function(f) {
-        var mail = f.select("g");
-        self.canvas.append(mail);
+// Interface.prototype.potato = function(speed, origin) {
+//     var self = this;
+//     Snap.load("images/envelope.svg", function(f) {
+//         var mail = f.select("g");
+//         self.canvas.append(mail);
 
-        var scale = Settings.mailScaling;
+//         var scale = Settings.mailScaling;
 
-        var scene = new Snap.Matrix();
-        scene.translate(origin.x + origin.width,
-                        origin.y + origin.height/2 - 15);
-        scene.scale(scale, scale);
+//         var scene = new Snap.Matrix();
+//         scene.translate(origin.x + origin.width,
+//                         origin.y + origin.height/2 - 15);
+//         scene.scale(scale, scale);
 
-        // Initial position
-        mail.attr({
-            transform: scene
-        });
+//         // Initial position
+//         mail.attr({
+//             transform: scene
+//         });
 
-        // Animates the mail to the destination
-        var path = self.canvas.path("M125,80 a60,60 0 1,0 -115,0");
-        path.attr({
-            fill: "none",
-            stroke: "none"
-        })
-        mail.drawAtPath(path, 5000);
-        // var dx = destination.x - (origin.x + origin.width) - 42;
-        // var dy = destination.y + destination.height/2 - (origin.y + origin.height/2) - 15;
-        // scene.translate(dx/scale, dy/scale);
-        // mail.animate({
-        //     transform: scene
-        // }, self.interval(speed), function() {
-        //     mail.remove();
-        //     callback();
-        // });
-    });
-};
+//         // Animates the mail to the destination
+//         var path = self.canvas.path("M125,80 a60,60 0 1,0 -115,0");
+//         path.attr({
+//             fill: "none",
+//             stroke: "none"
+//         })
+//         mail.drawAtPath(path, 5000);
+//         // var dx = destination.x - (origin.x + origin.width) - 42;
+//         // var dy = destination.y + destination.height/2 - (origin.y + origin.height/2) - 15;
+//         // scene.translate(dx/scale, dy/scale);
+//         // mail.animate({
+//         //     transform: scene
+//         // }, self.interval(speed), function() {
+//         //     mail.remove();
+//         //     callback();
+//         // });
+//     });
+// };
 
 window.Interface = Interface;
 
