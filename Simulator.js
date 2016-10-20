@@ -197,7 +197,7 @@ Simulator.prototype.serviceCenterEntrance = function(mail) {
 	var prop = (isLocal) ? "atServiceCenter1" : "atServiceCenter2";
 	var stat = (isLocal) ? "localServEntrance" : "remoteServEntrance";
 	var exitStat = (isLocal) ? "localServExit" : "remoteServExit";
-	
+
 	Stats[stat](this.time);
 	this[prop].push(mail);
 	var ui = this.ui;
@@ -214,15 +214,20 @@ Simulator.prototype.serviceCenterEntrance = function(mail) {
 		self[prop].pop();
 		ui.render();
 		var delays = mail.status.delays;
-		// if (delays > 0) {
-		// 	// TODO
-		// 	// ui.potato(self.speed, settings.serviceCenter.first);
-		// } else {
+		if (delays > 0) {
+			mail.status.delays--;
+			self.spawnMail(self.speed, settings.serviceCenter[target],
+						 settings.serviceCenter[target], function() {
+				self.serviceCenterEntrance(mail);
+			});
+			// TODO
+			// ui.potato(self.speed, settings.serviceCenter.first);
+		} else {
 			self.spawnMail(self.speed, settings.serviceCenter[target],
 						 settings.disposers[0], function() {
 				self.disposerEntrance(mail);
 			});
-		// }
+		}
 	});
 };
 
@@ -277,6 +282,8 @@ Simulator.prototype.exec = function() {
 			}, this.interval);
 		}
 	} else {
+		this.time = Settings.general.simulationTime;
+		this.ui.printStats(this.time);
 		this.report();
 	}
 }

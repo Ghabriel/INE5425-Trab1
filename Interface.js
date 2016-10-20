@@ -137,7 +137,7 @@ Interface.prototype.buildReport = function() {
         if (data.content) {
             for (var j = 0; j < data.content.length; j++) {
                 var row = data.content[j];
-                content += "\t" + row[0] + " " + row[1] + "\n";
+                content += "\t" + row[0] + " " + Settings.round(row[1], 3) + "\n";
             }
             content += "\n";
         }
@@ -173,7 +173,12 @@ Interface.prototype.printStats = function(time) {
                 var tr = document.createElement("tr");
                 for (var k = 0; k < rows[j].length; k++) {
                     var td = document.createElement("td");
-                    td.innerHTML = rows[j][k];
+                    var value = rows[j][k];
+                    if (k == 1) {
+                        td.innerHTML = Settings.round(value, 3);
+                    } else {
+                        td.innerHTML = value;
+                    }
                     tr.appendChild(td);
                 }
                 table.appendChild(tr);
@@ -290,6 +295,13 @@ Interface.prototype.spawnMail = function(speed, origin, destination, callback) {
         mail.attr({
             transform: scene
         });
+
+        // if (origin == destination) {
+        //     mail.attr({
+        //         stroke: "red",
+        //         "stroke-width": 0.5
+        //     });
+        // }
 
         // Animates the mail to the destination
         var dx = destination.x - (origin.x + origin.width) - 42;

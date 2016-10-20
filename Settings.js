@@ -88,7 +88,7 @@ var Settings = {
         }
     },
     general: {
-        simulationTime: 20,
+        simulationTime: 30,
         maxTravelTime: 1,
         numServers: {
             local: 10,
@@ -103,24 +103,24 @@ var Settings = {
     },
     successRate: {
         LL: {
-            success: 82.5,
-            failure: 5,
-            delay: 12.5
+            success: 50,
+            failure: 25,
+            delay: 25
         },
         LR: {
-            success: 82.5,
-            failure: 15,
-            delay: 2.5
+            success: 50,
+            failure: 25,
+            delay: 25
         },
         RL: {
-            success: 84,
-            failure: 15,
-            delay: 1
+            success: 50,
+            failure: 25,
+            delay: 25
         },
         RR: {
-            success: 86,
-            failure: 5,
-            delay: 9
+            success: 50,
+            failure: 25,
+            delay: 25
         }
     },
     timeBetweenArrivals: {
@@ -192,6 +192,11 @@ Settings.bind = function(fn/*, ...args*/) {
     return function() {
         return fn.apply(window, Array.prototype.slice.call(args, 1));
     };
+};
+
+Settings.round = function(value, decimalPlaces) {
+    var factor = Math.pow(10, decimalPlaces);
+    return Math.round(value * factor) / factor;
 };
 
 var foreach = Settings.foreach;
