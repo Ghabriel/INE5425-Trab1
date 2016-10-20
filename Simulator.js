@@ -226,8 +226,6 @@ Simulator.prototype.serviceCenterEntrance = function(mail) {
 						 settings.serviceCenter[target], function() {
 				self.serviceCenterEntrance(mail);
 			});
-			// TODO
-			// ui.potato(self.speed, settings.serviceCenter.first);
 		} else {
 			self.spawnMail(self.speed, settings.serviceCenter[target],
 						 settings.disposers[0], function() {

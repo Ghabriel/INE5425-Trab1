@@ -19,15 +19,13 @@ Table.generalSettings = function() {
         content: [
             ["Tempo de simulação", params.simulationTime],
             ["Número de servidores locais", params.numServers.local],
-            ["Número de servidores remotos", params.numServers.remote],
-            ["Prazo máximo de permanência", params.maxTravelTime]
+            ["Número de servidores remotos", params.numServers.remote]
         ],
         edit: [null, behavior],
         classNames: [
             ["", "general.simulationTime"],
             ["", "general.numServers.local"],
-            ["", "general.numServers.remote"],
-            ["", "general.maxTravelTime"]
+            ["", "general.numServers.remote"]
         ]
     };
 };

@@ -56,13 +56,7 @@ var Settings = {
                 y: 120,
                 width: 120,
                 height: 120
-            }/*,
-            {
-                x: 750,
-                y: 190,
-                width: 120,
-                height: 120
-            }*/
+            }
         ]
     },
     regex: {
@@ -89,7 +83,6 @@ var Settings = {
     },
     general: {
         simulationTime: 45,
-        maxTravelTime: 1,
         numServers: {
             local: 10,
             remote: 10
