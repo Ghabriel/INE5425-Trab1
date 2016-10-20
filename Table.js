@@ -10,6 +10,28 @@ function create(tag) {
     return document.createElement(tag);
 }
 
+Table.generalSettings = function() {
+    var params = settings.general;
+    var behavior = NumericFilter;
+    return {
+        title: "Configurações gerais",
+        headers: ["Nome", "Valor"],
+        content: [
+            ["Tempo de simulação", params.simulationTime],
+            ["Número de servidores locais", params.numServers.local],
+            ["Número de servidores remotos", params.numServers.remote],
+            ["Prazo máximo de permanência", params.maxTravelTime]
+        ],
+        edit: [null, behavior],
+        classNames: [
+            ["", "general.simulationTime"],
+            ["", "general.numServers.local"],
+            ["", "general.numServers.remote"],
+            ["", "general.maxTravelTime"]
+        ]
+    };
+};
+
 Table.trafficDistribution = function() {
     var params = settings.trafficDistribution;
     var behavior = NumericFilter;

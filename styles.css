@@ -34,6 +34,7 @@ tr.header td {
 #leftbar {
 	border-right: 1px solid black;
 	height: 100%;
+	width: 18%;
 }
 
 #speed_text {
@@ -49,7 +50,7 @@ tr.header td {
 	vertical-align: middle;
 }
 
-#stats_table tr.title td {
+#stats_table tr.title td, tr.header td {
 	background-color: #DDD;
 }
 

@@ -34,26 +34,42 @@ Stats.weightedAverage = function(prop) {
 	var sum = 0;
 	var totalTime = 0;
 	for (var i in this[prop]) {
-		sum += i * this[prop][i];
-		totalTime += this[prop][i];
+		if (this[prop].hasOwnProperty(i)) {
+			sum += i * this[prop][i];
+			totalTime += this[prop][i];
+		}
 	}
 	return sum / totalTime;
 };
+
+Stats.occupationRatio = function(prop) {
+	var totalTime = 0;
+	for (var i in this[prop]) {
+		if (this[prop].hasOwnProperty(i)) {
+			totalTime += this[prop][i];
+		}
+	}
+
+	if (totalTime == 0) {
+		return 0;
+	}
+	return 1 - (this[prop][0] || 0) / totalTime;
+}
 
 Stats.avgNumMessages = function() {
 	return this.weightedAverage("timePerAmount");
 };
 
 Stats.avgRecCenterOcupation = function() {
-	return this.weightedAverage("recCenterTimePerAmount");
+	return this.occupationRatio("recCenterTimePerAmount");
 };
 
 Stats.avgLocalServCenterOcupation = function() {
-	return this.weightedAverage("localServCenterTimePerAmount");
+	return this.occupationRatio("localServCenterTimePerAmount");
 };
 
 Stats.avgRemoteServCenterOcupation = function() {
-	return this.weightedAverage("remoteServCenterTimePerAmount");
+	return this.occupationRatio("remoteServCenterTimePerAmount");
 };
 
 Stats.updateAverage = function(time, lastChange, count, prop) {

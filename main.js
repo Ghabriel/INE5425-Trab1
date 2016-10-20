@@ -51,12 +51,13 @@ function setDOMEvents() {
 
     settingsButton.addEventListener("click", function() {
         var currentDisplay = leftBar.style.display;
-        leftBar.style.display = (currentDisplay == "none") ? "block" : "none";
+        leftBar.style.display = (currentDisplay == "none") ? "" : "none";
     });
 }
 
 function printAllTables() {
     var tables = [];
+    tables.push(Table.generalSettings());
     tables.push(Table.trafficDistribution());
     tables.push(Table.successRate());
     tables.push(Table.timeBetweenArrivals());

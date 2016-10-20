@@ -72,10 +72,16 @@ Interface.prototype.setStatsContainer = function(container) {
     this.statsContainer = container;
 };
 
-Interface.prototype.printStats = function() {
-    var info = [
+Interface.prototype.info = function(time) {
+    return [
         {
             title: "Estatísticas"
+        },
+        {
+            title: "Informações gerais",
+            content: [
+                ["Tempo de simulação:", time]
+            ]
         },
         {
             title: "Mensagens no sistema",
@@ -86,7 +92,7 @@ Interface.prototype.printStats = function() {
             ]
         },
         {
-            title: "Ocupação média dos centros",
+            title: "Taxa de ocupação média dos centros",
             content: [
                 ["Recepção:", Stats.avgRecCenterOcupation()],
                 ["Serviço 1 (local):", Stats.avgLocalServCenterOcupation()],
@@ -117,6 +123,36 @@ Interface.prototype.printStats = function() {
             ]
         },
     ];
+};
+
+Interface.prototype.buildReport = function() {
+    var info = this.info(Settings.general.simulationTime);
+    var content = "";
+    for (var i = 0; i < info.length; i++) {
+        var data = info[i];
+        if (data.title) {
+            content += data.title + ":\n";
+        }
+
+        if (data.content) {
+            for (var j = 0; j < data.content.length; j++) {
+                var row = data.content[j];
+                content += "\t" + row[0] + " " + row[1] + "\n";
+            }
+            content += "\n";
+        }
+    }
+    return content;
+};
+
+Interface.prototype.report = function() {
+    var content = this.buildReport();
+    var blob = new Blob([content], {type: "text/plain; charset=utf-8"});
+    saveAs(blob, "report.txt");
+};
+
+Interface.prototype.printStats = function(time) {
+    var info = this.info(time);
     var table = document.createElement("table");
     table.id = "stats_table";
     for (var i = 0; i < info.length; i++) {
@@ -193,11 +229,9 @@ Interface.prototype.renderDisposers = function() {
     if (!this.disposers) {
         this.disposers = [];
         this.disposers.push(rect(this.canvas, settings[0], "", true));
-        // this.disposers.push(rect(this.canvas, settings[1], ""));        
     }
 
     retext(this.disposers[0], settings[0], "Fim\nSucesso:\n" + Stats.success + "\nFalha:\n" + Stats.failure);
-    // retext(this.disposers[1], settings[1], "Fim\n(falha)\n" + Stats.failure);
 };
 
 Interface.prototype.renderEdges = function() {
@@ -241,7 +275,7 @@ Interface.prototype.renderEdges = function() {
 
 Interface.prototype.spawnMail = function(speed, origin, destination, callback) {
     var self = this;
-    Snap.load("images/envelope.svg", function(f) {
+    Snap.load(Settings.mailURL, function(f) {
         var mail = f.select("g");
         self.canvas.append(mail);
 

@@ -180,7 +180,7 @@ Simulator.prototype.receptionEntrance = function(mail) {
 	var settings = Settings.ui;
 	var self = this;
 	this.addEvent(next, function() {
-		var isLocal = (mail.origin == LOCAL);
+		var isLocal = (mail.target == LOCAL);
 		var target = (isLocal) ? "first" : "second";
 		Stats.receptionExit(self.time);
 		self.atRecCenter.pop();
@@ -193,7 +193,7 @@ Simulator.prototype.receptionEntrance = function(mail) {
 };
 
 Simulator.prototype.serviceCenterEntrance = function(mail) {
-	var isLocal = (mail.origin == LOCAL);
+	var isLocal = (mail.target == LOCAL);
 	var prop = (isLocal) ? "atServiceCenter1" : "atServiceCenter2";
 	var stat = (isLocal) ? "localServEntrance" : "remoteServEntrance";
 	var exitStat = (isLocal) ? "localServExit" : "remoteServExit";
@@ -238,10 +238,18 @@ Simulator.prototype.addInitialEvents = function() {
 };
 
 Simulator.prototype.addEvent = function(time, callback) {
+	var triggerTime = time + this.time;
+	if (triggerTime >= Settings.general.simulationTime) {
+		return;
+	}
 	this.eventCalendar.push({
-		time: time + this.time,
+		time: triggerTime,
 		exec: callback
 	});
+};
+
+Simulator.prototype.report = function() {
+	this.ui.report();
 };
 
 Simulator.prototype.step = function() {
@@ -251,32 +259,36 @@ Simulator.prototype.step = function() {
 	var event = this.eventCalendar.pop();
 	this.time = event.time;
 	event.exec();
-	this.ui.printStats();
+	this.ui.printStats(this.time);
 };
 
-Simulator.prototype.play = function(fastForward) {
+Simulator.prototype.exec = function() {
+	var self = this;
+	function step() {
+		self.step();
+		self.exec();
+	}
+	if (!this.eventCalendar.empty()) {
+		if (this.fastForward) {
+			step();
+		} else {
+			setTimeout(function() {
+				step();
+			}, this.interval);
+		}
+	} else {
+		this.report();
+	}
+}
+
+Simulator.prototype.play = function() {
 	if (this.started) {
 		this.paused = false;
 		return;
 	}
 	this.started = true;
-	var self = this;
-	var fn = function() {
-		var step = function() {
-			self.step();
-			fn();
-		}
-		if (!self.eventCalendar.empty()) {
-			if (fastForward) {
-				step();
-			} else {
-				setTimeout(function() {
-					step();
-				}, self.interval);
-			}
-		}
-	};
-	fn();
+	this.fastForward = false;
+	this.exec();
 };
 
 Simulator.prototype.pause = function() {

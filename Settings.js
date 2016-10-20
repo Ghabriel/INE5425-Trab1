@@ -7,10 +7,10 @@ var Settings = {
     mailURL: "images/envelope.svg",
     mailScaling: 3,
     mailInterval: function(speed) {
-        return 600 / speed;
+        return 300 / speed;
     },
     simulationInterval: function(speed) {
-        return 300 / speed;
+        return 150 / speed;
     },
     ui: {
         boxFillColor: "white",
@@ -85,6 +85,14 @@ var Settings = {
         normal: {
             label: "NORM",
             params: 2
+        }
+    },
+    general: {
+        simulationTime: 20,
+        maxTravelTime: 1,
+        numServers: {
+            local: 10,
+            remote: 10
         }
     },
     trafficDistribution: {
