@@ -53,7 +53,6 @@ Table.trafficDistribution = function() {
 Table.successRate = function() {
     var params = settings.successRate;
     var behavior = NumericFilter;
-    // var totalBehavior = new AdderMacro([1, 2, 3]);
     var totalBehavior = settings.bind(AdderMacro, [1, 2, 3]);
     var content = [];
     foreach(params, function(key, value) {

@@ -16,7 +16,6 @@ Settings.foreach(labels, function(key, value) {
 function call(expression) {
 	var matches = (expression + "").match(Settings.regex.functions);
 	if (!matches) {
-		// TODO: what to do?
 		return -1;
 	}
 
@@ -65,7 +64,6 @@ Simulator.prototype.setup = function() {
 Simulator.prototype.setSpeed = function(speed) {
 	this.speed = speed;
 	this.interval = Settings.simulationInterval(speed);
-	// TODO: bye cartinhas
 };
 
 Simulator.prototype.generateTarget = function(origin) {
